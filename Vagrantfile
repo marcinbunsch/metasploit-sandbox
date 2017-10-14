@@ -3,13 +3,10 @@
 
 Vagrant.configure('2') do |config|
 
-  config.vm.provider :virtualbox do |vb|
-    config.vm.box = 'ubuntu/trusty64'
-  end
-
   config.vm.network "public_network", type: 'dhcp'
 
   config.vm.define 'metasploit' do |machine|
+    machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = 'localhost-metasploit'
     machine.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'playbooks/metasploit.yml'
@@ -21,11 +18,29 @@ Vagrant.configure('2') do |config|
   end
 
   config.vm.define 'target' do |machine|
-
+    machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = 'localhost-metasploit-target'
-    config.vm.provision 'ansible' do |ansible|
+    machine.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'playbooks/target.yml'
-      # ansible.verbose = 'vvvv'
+    end
+    machine.vm.provider :virtualbox do |vb|
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+  end
+
+  config.vm.define 'target-windows' do |machine|
+    machine.vm.box = 'windows/xp-ie6'
+    machine.vm.box_url = 'http://aka.ms/vagrant-xp-ie6'
+
+    machine.vm.communicator = "winrm"
+    machine.vm.boot_timeout = 1
+    machine.winrm.host = "localhost"
+    machine.winrm.timeout = 1
+    machine.winrm.retry_limit = 1
+
+    machine.vm.provider :virtualbox do |v|
+      v.gui = true
     end
   end
 

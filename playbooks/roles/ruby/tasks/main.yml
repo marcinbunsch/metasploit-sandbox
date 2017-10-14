@@ -1,0 +1,34 @@
+---
+
+- name: Remove default ruby
+  become: true
+  apt:
+    name: "{{ item }}"
+    purge: true
+    state: absent
+  with_items:
+    - ruby
+    - ruby1.9.1
+
+- name: Add brightbox/ruby-ng repository
+  become: true
+  apt_repository: repo='ppa:brightbox/ruby-ng'
+
+- name: Update cache
+  become: true
+  apt: update_cache=yes cache_valid_time=3600
+
+- name: Install ruby
+  become: true
+  apt: name={{ item }}
+  with_items:
+    - "{{ ruby_version }}"
+    - "{{ ruby_version }}-dev"
+
+- name: Install bundler
+  become: true
+  gem:
+    user_install: no
+    name: bundler
+    state: present
+

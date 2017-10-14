@@ -1,0 +1,40 @@
+- name: Install required packages
+  become: true
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items:
+    - libsqlite3-dev
+
+- name: Install rails 4.0.0
+  become: true
+  become_method: sudo
+  command: "gem install rails --version=4.0.0 --no-rdoc --no-ri"
+
+- name: "Check for app"
+  stat:
+    path: /home/vagrant/target
+  register: app_dir
+
+- name: Build new app
+  when: app_dir.stat.isdir is not defined
+  command: "rails new target -T --skip-javascript --skip-sprockets"
+  args:
+    chdir: /home/vagrant
+
+- name: Write routes
+  template:
+    src: routes.rb
+    dest: "/home/vagrant/target/config/routes.rb"
+
+- name: Write controller
+  template:
+    src: controller.rb
+    dest: "/home/vagrant/target/app/controllers/targets_controller.rb"
+
+- name: Start app
+  command: "bin/rails s -d -P /home/vagrant/target/server.pid"
+  args:
+    chdir: /home/vagrant/target
+  ignore_errors: true
+

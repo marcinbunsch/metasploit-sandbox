@@ -1,0 +1,32 @@
+- name: Check if nmap installed
+  shell: "which nmap"
+  register: nmap_installed
+  ignore_errors: true
+
+- name: Install required packages
+  become: true
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items:
+    - build-essential
+    - libsvn1
+  when: nmap_installed|failed
+
+- name: Download nmap
+  subversion:
+    repo: "https://svn.nmap.org/nmap"
+    dest: /tmp/nmap
+  when: nmap_installed|failed
+
+- name: Install nmap
+  command: "{{ item }}"
+  become: true
+  args:
+    chdir: "/tmp/nmap"
+  with_items:
+    - ./configure
+    - make
+    - make install
+  when: nmap_installed|failed
+

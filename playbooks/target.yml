@@ -1,0 +1,10 @@
+- name: Installing prerequisites
+  hosts: all
+  roles:
+    - role: "ruby"
+      ruby_install: 'package'
+      ruby_version: 'ruby2.1'
+      ruby_user_name: 'vagrant'
+    - role: "target"
+
+

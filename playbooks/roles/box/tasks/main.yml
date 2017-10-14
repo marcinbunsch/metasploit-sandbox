@@ -1,0 +1,55 @@
+- name: Update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: true
+
+- name: Install base packages
+  become: true
+  apt:
+    pkg: "{{ item }}"
+    state: installed
+  with_items:
+    - build-essential
+    - zlib1g
+    - zlib1g-dev
+    - libxml2
+    - subversion
+    - libxml2-dev
+    - libxslt-dev
+    - locate
+    - libreadline6-dev
+    - libcurl4-openssl-dev
+    - git-core
+    - libssl-dev
+    - libgmp3-dev
+    - libyaml-dev
+    - openssl
+    - autoconf
+    - libtool
+    - ncurses-dev
+    - bison
+    - curl
+    - wget
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+    - libapr1
+    - libaprutil1
+    - libsvn1
+    - libpcap-dev
+    - postgresql-client
+    - htop
+    - unzip
+    - lsof
+    - git-core
+    - git
+    - vim
+    - gawk
+    - libsqlite3-dev
+    - sqlite3
+    - libgdbm-dev
+    - libffi-dev
+    - tree
+    - python-crypto
+    - python-pip
+    - python-psycopg2
+

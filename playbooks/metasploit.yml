@@ -1,0 +1,11 @@
+- name: Installing prerequisites
+  hosts: all
+  roles:
+    - role: "box"
+    - role: "nmap"
+    - role: "ruby"
+      ruby_install: 'package'
+      ruby_version: 'ruby2.4'
+      ruby_user_name: 'vagrant'
+    - role: "metasploit"
+

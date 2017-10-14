@@ -1,0 +1,51 @@
+- name: Download metasploit framework
+  git:
+    repo: 'https://github.com/rapid7/metasploit-framework'
+    dest: /home/vagrant/metasploit
+    update: no
+
+- name: Setup postgres metasploit dbs
+  postgresql_db:
+    state: present
+    name: "{{ item }}"
+  become: true
+  become_user: postgres
+  become_method: sudo
+  with_items:
+    - metasploit_framework_development
+    - metasploit_framework_test
+
+- name: Setup postgres metasploit users
+  postgresql_user:
+    state: present
+    db: "{{ item.db }}"
+    user: "{{ item.user }}"
+    password: "{{ item.password }}"
+  become: true
+  become_user: postgres
+  become_method: sudo
+  with_items:
+    - { user: msfuser, password: msfuser, db: metasploit_framework_development }
+    - { user: msftest, password: msftest, db: metasploit_framework_test }
+
+- name: Write metasploit database config
+  template:
+    src: database.yml.j2
+    dest: "/home/vagrant/metasploit/config/database.yml"
+
+- name: Bundle metasploit
+  bundler:
+    chdir: /home/vagrant/metasploit
+    state: present
+    extra_args: "--path /home/vagrant/metasploit/.bundle"
+
+- name: Symlink executables
+  become: true
+  file:
+    src: "/home/vagrant/metasploit/{{ item }}"
+    dest: "/usr/local/bin/{{ item }}"
+    owner: vagrant
+    group: vagrant
+    state: link
+  with_items:
+    - msfconsole

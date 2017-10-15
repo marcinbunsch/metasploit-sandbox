@@ -17,7 +17,7 @@ Vagrant.configure('2') do |config|
     end
   end
 
-  config.vm.define 'target' do |machine|
+  config.vm.define 'target-rails' do |machine|
     machine.vm.box = "ubuntu/trusty64"
     machine.vm.hostname = 'localhost-metasploit-target'
     machine.vm.provision 'ansible' do |ansible|
